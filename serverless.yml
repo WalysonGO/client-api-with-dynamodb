@@ -1,0 +1,109 @@
+service: typescript-aws-lambda-dynamo
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: test
+  region: sa-east-1
+  environment:
+    DYNAMODB_CLIENT_TABLE: ${self:custom.clientsTableName}
+    PROD: true
+
+custom:
+  clientsTableName: clients-table-${self:provider.stage}
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-offline
+
+functions:
+  createClient:
+    handler: src/functions/ClientFunctions.create
+    name: create-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client
+          method: POST
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt ClientsTable.Arn
+
+  getAllClients:
+    handler: src/functions/ClientFunctions.findAll
+    name: get-all-clients
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: clients
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:Scan"
+        Resource: !GetAtt ClientsTable.Arn
+
+  getClientById:
+    handler: src/functions/ClientFunctions.findById
+    name: get-client-by-id
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client/{id}
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:GetItem"
+        Resource: !GetAtt ClientsTable.Arn
+
+  updateClient:
+    handler: src/functions/ClientFunctions.update
+    name: update-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client/{id}
+          method: PUT
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:UpdateItem"
+        Resource: !GetAtt ClientsTable.Arn
+
+  deleteClient:
+    handler: src/functions/ClientFunctions.deleteById
+    name: delete-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client/{id}
+          method: DELETE
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:DeleteItem"
+        Resource: !GetAtt ClientsTable.Arn
+
+resources:
+  Resources:
+    ClientsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.clientsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

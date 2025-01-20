@@ -1,0 +1,41 @@
+{
+  "name": "client-api",
+  "version": "1.0.0",
+  "description": "CRUD operations for clients",
+  "scripts": {
+    "unit": "jest",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit",
+    "dev": "serverless offline start",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watchAll",
+    "deploy": "serverless deploy"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.18.0",
+    "@aws-sdk/util-dynamodb": "^3.18.0",
+    "@types/aws-lambda": "^8.10.126",
+    "jest": "^29.2.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.0",
+    "@types/node": "^20.9.0",
+    "aws-sdk": "^2.1692.0",
+    "dotenv": "^16.4.7",
+    "dynamodb-localhost": "^0.0.9",
+    "esbuild": "^0.24.2",
+    "jest": "^29.2.1",
+    "serverless": "^4.4.19",
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-offline": "^14.4.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=20.x"
+  }
+}

@@ -1,4 +1,21 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: walysongo
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: client-api
 service: typescript-aws-lambda-dynamo
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
 
 provider:
   name: aws
@@ -6,15 +23,16 @@ provider:
   stage: test
   region: sa-east-1
   environment:
-    DYNAMODB_CLIENT_TABLE: ${self:custom.clientsTableName}
+    DYNAMODB_CLIENT_TABLE: dynamodb
     PROD: true
-
-custom:
-  clientsTableName: clients-table-${self:provider.stage}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+    AWS_REGION: ${env:AWS_REGION}
 
 plugins:
   - serverless-iam-roles-per-function
   - serverless-offline
+  - serverless-dynamodb-local
 
 functions:
   createClient:
@@ -94,15 +112,15 @@ functions:
 
 resources:
   Resources:
-    ClientsTable:
+    clientsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.clientsTableName}
+        TableName:  dynamodb
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: email
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

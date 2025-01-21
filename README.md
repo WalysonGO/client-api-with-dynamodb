@@ -16,8 +16,8 @@ Este é um serviço de **API REST** para realizar operações CRUD em clientes. 
    Primeiro, clone o repositório para o seu ambiente local.
 
    ```bash
-   git clone https://github.com/seu-usuario/client-api.git
-   cd client-api
+   git clone https://github.com/WalysonGO/client-api-with-dynamodb.git
+   cd client-api-with-dynamodb
    ```
 
 2. **Rodando DynamoDB Local com Docker Compose**:
